@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VidFetch Pro</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#09090f;--bg2:#111119;--bg3:#18181f;--bg4:#1f1f2b;
+  --border:rgba(255,255,255,0.06);--border2:rgba(255,255,255,0.11);
+  --text:#ede9ff;--text2:#8e8aae;--text3:#55526e;
+  --accent:#7c5cfc;--accent2:#a87eff;--aglow:rgba(124,92,252,0.2);
+  --teal:#1dcfb4;--teal-d:rgba(29,207,180,0.13);
+  --red:#ff4d6d;--red-d:rgba(255,77,109,0.1);
+  --gold:#ffb347;--gold-d:rgba(255,179,71,0.1);
+  --green:#4dff91;--green-d:rgba(77,255,145,0.1);
+  --r:14px;--rs:8px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+
+/* background */
+.bg-grid{position:fixed;inset:0;background-image:linear-gradient(rgba(124,92,252,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(124,92,252,0.025) 1px,transparent 1px);background-size:64px 64px;pointer-events:none;z-index:0}
+.orb{position:fixed;border-radius:50%;pointer-events:none;z-index:0;animation:orbf 10s ease-in-out infinite}
+.orb1{width:700px;height:700px;background:radial-gradient(circle,rgba(124,92,252,0.07) 0%,transparent 65%);top:-250px;right:-200px}
+.orb2{width:500px;height:500px;background:radial-gradient(circle,rgba(29,207,180,0.05) 0%,transparent 65%);bottom:-150px;left:-150px;animation-delay:-5s;animation-direction:reverse}
+@keyframes orbf{0%,100%{transform:translate(0,0)}50%{transform:translate(25px,-25px)}}
+
+/* layout */
+.wrap{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:0 18px 80px}
+
+/* header */
+header{padding:36px 0 16px;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
+.logo{display:flex;align-items:center;gap:12px}
+.logo-icon{width:42px;height:42px;background:linear-gradient(135deg,var(--accent),var(--teal));border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:19px;box-shadow:0 0 22px var(--aglow);flex-shrink:0}
+.logo-name{font-size:21px;font-weight:800;background:linear-gradient(90deg,var(--accent2),var(--teal));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:-.5px}
+.logo-sub{font-size:10px;color:var(--text3);font-family:'JetBrains Mono',monospace;letter-spacing:2px;text-transform:uppercase}
+.status-badge{background:var(--bg3);border:1px solid var(--border2);border-radius:50px;padding:6px 14px;font-size:12px;font-family:'JetBrains Mono',monospace;display:flex;align-items:center;gap:7px;color:var(--teal)}
+.pdot{width:7px;height:7px;background:var(--teal);border-radius:50%;animation:pdotA 2s infinite}
+@keyframes pdotA{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(.75)}}
+
+/* hero */
+.hero{text-align:center;padding:46px 0 36px}
+.hero h1{font-size:clamp(28px,5vw,50px);font-weight:800;line-height:1.15;margin-bottom:14px}
+.hero h1 em{font-style:normal;background:linear-gradient(90deg,var(--accent2),var(--teal));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero p{font-size:16px;color:var(--text2);font-weight:300;max-width:500px;margin:0 auto 28px;line-height:1.75}
+.platforms{display:flex;gap:9px;justify-content:center;flex-wrap:wrap}
+.pchip{display:flex;align-items:center;gap:7px;background:var(--bg3);border:1px solid var(--border);border-radius:50px;padding:6px 15px;font-size:12.5px;font-weight:500;color:var(--text2);transition:.2s}
+.pchip:hover{border-color:var(--border2);color:var(--text)}
+.pdot2{width:8px;height:8px;border-radius:50%}
+.yt{background:#ff0000}.fb{background:#1877f2}.tk{background:#25f4ee}.xw{background:#e7e7e7}
+
+/* cards */
+.card{background:var(--bg2);border:1px solid var(--border2);border-radius:20px;padding:28px;margin-bottom:22px;position:relative;overflow:hidden}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--accent),transparent);opacity:.4}
+
+/* input area */
+.input-row{display:flex;gap:10px;margin-bottom:18px}
+.url-wrap{flex:1;position:relative}
+.url-wrap .icon{position:absolute;right:14px;top:50%;transform:translateY(-50%);font-size:17px;pointer-events:none;transition:.2s}
+input[type=url],input[type=text]{width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r);padding:13px 46px 13px 16px;font-family:'Tajawal',sans-serif;font-size:15px;color:var(--text);outline:none;transition:.2s;direction:ltr;text-align:left}
+input::placeholder{color:var(--text3)}
+input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--aglow)}
+.btn-primary{background:linear-gradient(135deg,var(--accent),#5c3fc4);border:none;border-radius:var(--r);padding:13px 26px;color:#fff;font-family:'Tajawal',sans-serif;font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:8px;white-space:nowrap;transition:.2s;box-shadow:0 4px 18px var(--aglow)}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 6px 26px rgba(124,92,252,.4)}
+.btn-primary:active{transform:translateY(0)}
+.btn-primary:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
+.btn-green{background:linear-gradient(135deg,var(--teal),#0f9e86);border:none;border-radius:var(--r);padding:15px;color:#fff;font-family:'Tajawal',sans-serif;font-size:16px;font-weight:700;cursor:pointer;width:100%;display:flex;align-items:center;justify-content:center;gap:10px;transition:.2s;box-shadow:0 4px 22px rgba(29,207,180,.28)}
+.btn-green:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(29,207,180,.38)}
+.btn-green:disabled{opacity:.45;cursor:not-allowed;transform:none}
+
+/* options */
+.opts{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.opt-g{display:flex;align-items:center;gap:8px;flex:1;min-width:170px}
+.opt-lbl{font-size:13px;color:var(--text3);white-space:nowrap}
+select{flex:1;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--rs);padding:9px 14px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:13px;outline:none;cursor:pointer;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='7'%3E%3Cpath fill='%238e8aae' d='M5 7L0 0h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:left 11px center;padding-left:30px;transition:.2s}
+select:focus{border-color:var(--accent)}
+.toggle-g{display:flex;align-items:center;gap:9px;font-size:13px;color:var(--text2);cursor:pointer;white-space:nowrap;user-select:none}
+.tog{width:40px;height:22px;background:var(--bg3);border:1px solid var(--border2);border-radius:50px;position:relative;transition:.2s;flex-shrink:0}
+.tog::after{content:'';position:absolute;top:3px;right:3px;width:14px;height:14px;background:var(--text3);border-radius:50%;transition:.2s}
+.tog.on{background:rgba(124,92,252,.22);border-color:var(--accent)}
+.tog.on::after{background:var(--accent);right:auto;left:3px}
+
+/* error banner */
+.err-banner{background:var(--red-d);border:1px solid rgba(255,77,109,.25);border-radius:var(--r);padding:14px 18px;font-size:14px;color:var(--red);margin-bottom:18px;display:none;animation:fadein .3s ease}
+
+/* video info */
+.vinfo{display:flex;gap:18px;margin-bottom:22px;align-items:flex-start}
+.thumb-wrap{position:relative;flex-shrink:0}
+.thumb-wrap img,.thumb-ph{width:176px;height:100px;border-radius:10px;object-fit:cover;border:1px solid var(--border2)}
+.thumb-ph{background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:30px}
+.dur{position:absolute;bottom:5px;left:5px;background:rgba(0,0,0,.82);border-radius:4px;padding:2px 7px;font-size:11px;font-family:'JetBrains Mono',monospace;color:#fff}
+.vmeta{flex:1;min-width:0}
+.vtitle{font-size:15.5px;font-weight:700;margin-bottom:9px;line-height:1.4}
+.vtags{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:12px}
+.tag{padding:3px 11px;border-radius:50px;font-size:11.5px;font-weight:600}
+.tg-p{background:var(--aglow);color:var(--accent2);border:1px solid rgba(124,92,252,.28)}
+.tg-v{background:var(--gold-d);color:var(--gold);border:1px solid rgba(255,179,71,.2)}
+.tg-av{background:var(--teal-d);color:var(--teal);border:1px solid rgba(29,207,180,.2)}
+.vup{font-size:13px;color:var(--text3)}
+
+/* formats */
+.sec-title{font-size:12px;color:var(--text3);font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:13px;display:flex;align-items:center;gap:8px}
+.sec-title::after{content:'';flex:1;height:1px;background:var(--border)}
+.fmts{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:9px;margin-bottom:18px}
+.fmt{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:13px;cursor:pointer;transition:.2s;position:relative;overflow:hidden}
+.fmt:hover{border-color:var(--accent);background:rgba(124,92,252,.05)}
+.fmt.sel{border-color:var(--accent);background:rgba(124,92,252,.09);box-shadow:0 0 0 1px var(--accent) inset}
+.fmt.sel::after{content:'✓';position:absolute;top:7px;left:7px;width:17px;height:17px;background:var(--accent);border-radius:50%;font-size:9px;color:#fff;display:flex;align-items:center;justify-content:center;line-height:17px;text-align:center}
+.fq{font-size:20px;font-weight:800;font-family:'JetBrains Mono',monospace;margin-bottom:4px}
+.fq.u{color:var(--teal)}.fq.h{color:var(--accent2)}.fq.m{color:var(--gold)}
+.fd{font-size:11px;color:var(--text3);line-height:1.6}
+.fs{font-size:11.5px;color:var(--text2);margin-top:5px;font-family:'JetBrains Mono',monospace}
+.fbadge{position:absolute;top:7px;right:7px;background:var(--aglow);border-radius:3px;padding:1px 5px;font-size:9px;color:var(--accent2);font-weight:700;letter-spacing:.3px}
+
+/* queue */
+.q-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px}
+.q-title{font-size:15.5px;font-weight:700}
+.q-cnt{font-size:12px;color:var(--text3);font-family:'JetBrains Mono',monospace;background:var(--bg3);padding:4px 11px;border-radius:50px}
+.btn-sm{background:transparent;border:1px solid var(--border2);border-radius:var(--rs);padding:5px 12px;font-family:'Tajawal',sans-serif;font-size:12px;cursor:pointer;transition:.2s;display:flex;align-items:center;gap:5px}
+.btn-sm.red{color:var(--red)}.btn-sm.red:hover{background:var(--red-d);border-color:var(--red)}
+.btn-sm.green{color:var(--green)}.btn-sm.green:hover{background:var(--green-d);border-color:var(--green)}
+.btn-sm.def{color:var(--text2)}.btn-sm.def:hover{border-color:var(--accent);color:var(--accent2)}
+
+/* download item */
+.dl-item{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:15px;margin-bottom:9px;animation:fadein .25s ease}
+.dl-item:last-child{margin-bottom:0}
+@keyframes fadein{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.dl-head{display:flex;align-items:flex-start;gap:11px;margin-bottom:11px}
+.dl-ico{width:34px;height:34px;border-radius:8px;background:var(--bg4);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.dl-info{flex:1;min-width:0}
+.dl-name{font-size:13.5px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:3px}
+.dl-meta{font-size:11.5px;color:var(--text3);display:flex;gap:9px;flex-wrap:wrap}
+.dl-st{font-size:11.5px;font-weight:600;padding:3px 10px;border-radius:50px;white-space:nowrap;flex-shrink:0}
+.st-wait{background:var(--teal-d);color:var(--teal)}
+.st-dl{background:var(--aglow);color:var(--accent2)}
+.st-mrg{background:var(--gold-d);color:var(--gold)}
+.st-done{background:var(--green-d);color:var(--green)}
+.st-err{background:var(--red-d);color:var(--red)}
+
+.prog-wrap{height:3px;background:var(--border);border-radius:2px;overflow:hidden;margin-bottom:9px}
+.prog{height:100%;border-radius:2px;transition:width .5s ease;background:linear-gradient(90deg,var(--accent),var(--teal))}
+.prog.mrg{background:linear-gradient(90deg,var(--gold),#ff8c00);animation:shimmer 1.4s infinite}
+.prog.done{background:linear-gradient(90deg,var(--green),#00c96e)}
+@keyframes shimmer{0%,100%{opacity:1}50%{opacity:.55}}
+.prog-row{display:flex;justify-content:space-between;font-size:11px;color:var(--text3);font-family:'JetBrains Mono',monospace;margin-bottom:10px}
+.dl-acts{display:flex;gap:7px;flex-wrap:wrap}
+
+/* stats */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:22px}
+.stat{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:14px;text-align:center}
+.sv{font-size:24px;font-weight:800;font-family:'JetBrains Mono',monospace;color:var(--accent2);margin-bottom:3px}
+.sl{font-size:11.5px;color:var(--text3)}
+
+/* notice */
+.notice{background:linear-gradient(135deg,rgba(255,179,71,.06),rgba(255,179,71,.02));border:1px solid rgba(255,179,71,.18);border-radius:var(--r);padding:15px 18px;margin-bottom:20px;display:flex;gap:12px}
+.n-ico{font-size:20px;flex-shrink:0;margin-top:2px}
+.n-t{font-size:13.5px;font-weight:700;color:var(--gold);margin-bottom:5px}
+.n-b{font-size:12.5px;color:var(--text3);line-height:1.7}
+code{background:var(--bg3);border:1px solid var(--border2);border-radius:4px;padding:1px 7px;font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--accent2)}
+
+/* loader dots */
+.dots{display:inline-flex;gap:3px;align-items:center}
+.dots span{width:5px;height:5px;background:currentColor;border-radius:50%;animation:db 1.1s infinite}
+.dots span:nth-child(2){animation-delay:.15s}
+.dots span:nth-child(3){animation-delay:.3s}
+@keyframes db{0%,80%,100%{transform:scale(.65);opacity:.35}40%{transform:scale(1);opacity:1}}
+
+/* empty */
+.empty{text-align:center;padding:30px;color:var(--text3);font-size:14px}
+.empty-ico{font-size:34px;opacity:.35;margin-bottom:9px}
+
+/* footer */
+footer{text-align:center;padding:28px 0 0;color:var(--text3);font-size:12.5px;border-top:1px solid var(--border);line-height:1.85}
+
+/* analysis loading */
+.analyzing{text-align:center;padding:28px;color:var(--text2);font-size:14px}
+
+/* hidden */
+.hidden{display:none!important}
+
+/* responsive */
+@media(max-width:580px){
+  .vinfo{flex-direction:column}
+  .thumb-wrap img,.thumb-ph{width:100%;height:155px}
+  .input-row{flex-direction:column}
+  .opts{flex-direction:column;align-items:stretch}
+  .opt-g{min-width:unset}
+  header{flex-direction:column;align-items:flex-start}
+}
+</style>
+</head>
+<body>
+<div class="bg-grid"></div>
+<div class="orb orb1"></div>
+<div class="orb orb2"></div>
+
+<div class="wrap">
+
+  <!-- Header -->
+  <header>
+    <div class="logo">
+      <div class="logo-icon">⬇</div>
+      <div>
+        <div class="logo-name">VidFetch Pro</div>
+        <div class="logo-sub">Video Downloader</div>
+      </div>
+    </div>
+    <div class="status-badge">
+      <span class="pdot"></span>
+      <span id="serverStatus">جارٍ الاتصال…</span>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="hero">
+    <h1>حمّل الفيديوهات بـ<em>أعلى جودة</em></h1>
+    <p>يعمل مباشرة على جهازك — حمّل من YouTube وFacebook وTikTok وX والمزيد</p>
+    <div class="platforms">
+      <div class="pchip"><span class="pdot2 yt"></span>YouTube</div>
+      <div class="pchip"><span class="pdot2 fb"></span>Facebook</div>
+      <div class="pchip"><span class="pdot2 tk"></span>TikTok</div>
+      <div class="pchip"><span class="pdot2 xw"></span>X (Twitter)</div>
+      <div class="pchip">📸 Instagram</div>
+      <div class="pchip">🎵 SoundCloud</div>
+    </div>
+  </section>
+
+  <!-- Input card -->
+  <div class="card">
+    <div class="input-row">
+      <div class="url-wrap">
+        <input type="url" id="urlInput" placeholder="https://www.youtube.com/watch?v=...  أو أي رابط فيديو" autocomplete="off" spellcheck="false">
+        <div class="icon" id="urlIcon">🔗</div>
+      </div>
+      <button class="btn-primary" id="analyzeBtn" onclick="analyzeUrl()">
+        <span id="analyzeTxt">تحليل</span>
+        <span>🔍</span>
+      </button>
+    </div>
+
+    <div class="opts">
+      <div class="opt-g">
+        <span class="opt-lbl">الجودة</span>
+        <select id="selQuality">
+          <option value="bestvideo+bestaudio/best">أعلى جودة</option>
+          <option value="bestvideo[height<=2160]+bestaudio/best">4K كحد أقصى</option>
+          <option value="bestvideo[height<=1080]+bestaudio/best">1080p كحد أقصى</option>
+          <option value="bestvideo[height<=720]+bestaudio/best">720p كحد أقصى</option>
+          <option value="bestaudio/best">صوت فقط</option>
+        </select>
+      </div>
+      <div class="opt-g">
+        <span class="opt-lbl">الصيغة</span>
+        <select id="selFmt">
+          <option value="mp4">MP4</option>
+          <option value="webm">WebM</option>
+          <option value="mkv">MKV</option>
+          <option value="mp3">MP3 (صوت)</option>
+        </select>
+      </div>
+      <label class="toggle-g" onclick="toggleMerge()">
+        <span>دمج الصوت والصورة</span>
+        <div class="tog on" id="togMerge"></div>
+      </label>
+      <label class="toggle-g" onclick="togglePlaylist()">
+        <span>تحميل القائمة كاملة</span>
+        <div class="tog" id="togPlaylist"></div>
+      </label>
+    </div>
+  </div>
+
+  <!-- Error banner -->
+  <div class="err-banner" id="errBanner"></div>
+
+  <!-- Analysis result -->
+  <div class="card hidden" id="resultCard">
+    <div id="resultInner">
+      <div class="analyzing">
+        <div class="dots"><span></span><span></span><span></span></div>
+        <div style="margin-top:10px;font-size:13px">جارٍ تحليل الرابط وجلب الصيغ المتاحة…</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats bar -->
+  <div class="stats hidden" id="statsBar">
+    <div class="stat"><div class="sv" id="sTotal">0</div><div class="sl">إجمالي التحميلات</div></div>
+    <div class="stat"><div class="sv" id="sDone" style="color:var(--green)">0</div><div class="sl">مكتمل</div></div>
+    <div class="stat"><div class="sv" id="sActive" style="color:var(--teal)">0</div><div class="sl">جارٍ التحميل</div></div>
+    <div class="stat"><div class="sv" id="sSpeed" style="color:var(--accent2)">—</div><div class="sl">سرعة الشبكة</div></div>
+  </div>
+
+  <!-- Queue -->
+  <div class="card hidden" id="queueCard">
+    <div class="q-header">
+      <div class="q-title">📥 قائمة التحميل</div>
+      <div style="display:flex;gap:9px;align-items:center;flex-wrap:wrap">
+        <span class="q-cnt" id="qCount">0 ملف</span>
+        <button class="btn-sm red" onclick="clearDone()">مسح المكتملة</button>
+        <button class="btn-sm red" onclick="clearAll()">مسح الكل</button>
+      </div>
+    </div>
+    <div id="qList">
+      <div class="empty"><div class="empty-ico">📂</div>لا توجد تحميلات</div>
+    </div>
+  </div>
+
+  <footer>
+    <p>VidFetch Pro — يعمل بواسطة yt-dlp + Flask</p>
+    <p style="margin-top:5px;font-size:11px">يدعم أكثر من 1000 موقع • تحميل متعدد • استئناف التحميل • دمج الصوت والصورة عبر FFmpeg</p>
+  </footer>
+
+</div>
+
+<script>
+// ══ CONFIG ══════════════════════════════════════════════
+const API = window.location.origin;  // نفس عنوان السيرفر تلقائياً
+
+// ══ STATE ═══════════════════════════════════════════════
+const S = {
+  mergeAV: true,
+  playlist: false,
+  downloads: {},       // { job_id: {...} }
+  selectedFmtId: null,
+  currentUrl: '',
+  pollTimers: {},
+};
+
+// ══ BOOT ════════════════════════════════════════════════
+async function checkServer() {
+  try {
+    const r = await fetch(`${API}/api/downloads`, { signal: AbortSignal.timeout(4000) });
+    if (r.ok) {
+      document.getElementById('serverStatus').textContent = 'السيرفر متصل ✓';
+      return true;
+    }
+  } catch {}
+  document.getElementById('serverStatus').textContent = 'السيرفر غير متصل';
+  document.getElementById('serverStatus').style.color = 'var(--red)';
+  document.querySelector('.pdot').style.background = 'var(--red)';
+  return false;
+}
+checkServer();
+
+// ══ URL DETECT ══════════════════════════════════════════
+function detectPlatform(url) {
+  if (!url) return null;
+  const u = url.toLowerCase();
+  if (u.includes('youtube') || u.includes('youtu.be')) return ['🎬', 'YouTube'];
+  if (u.includes('facebook') || u.includes('fb.watch'))return ['📘', 'Facebook'];
+  if (u.includes('tiktok'))  return ['🎵', 'TikTok'];
+  if (u.includes('twitter') || u.includes('x.com'))    return ['✕', 'X'];
+  if (u.includes('instagram')) return ['📸', 'Instagram'];
+  return ['🌐', 'Other'];
+}
+
+document.getElementById('urlInput').addEventListener('input', function () {
+  const p = detectPlatform(this.value);
+  document.getElementById('urlIcon').textContent = p ? p[0] : '🔗';
+});
+
+document.getElementById('urlInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') analyzeUrl();
+});
+
+// ══ ANALYZE ═════════════════════════════════════════════
+async function analyzeUrl() {
+  const url = document.getElementById('urlInput').value.trim();
+  if (!url) { shakeInput(); return; }
+
+  S.currentUrl = url;
+  S.selectedFmtId = null;
+
+  setErr('');
+  const btn = document.getElementById('analyzeBtn');
+  const txt = document.getElementById('analyzeTxt');
+  btn.disabled = true;
+  txt.innerHTML = '<span class="dots"><span></span><span></span><span></span></span>';
+
+  const resultCard = document.getElementById('resultCard');
+  resultCard.classList.remove('hidden');
+  document.getElementById('resultInner').innerHTML = `
+    <div class="analyzing">
+      <div class="dots"><span></span><span></span><span></span></div>
+      <div style="margin-top:10px;font-size:13px">جارٍ تحليل الرابط وجلب الصيغ المتاحة…</div>
+    </div>`;
+
+  try {
+    const res = await fetch(`${API}/api/analyze`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ url }),
+    });
+    const data = await res.json();
+
+    if (!res.ok) {
+      setErr(data.error || 'فشل في تحليل الرابط');
+      resultCard.classList.add('hidden');
+    } else {
+      renderResult(data);
+    }
+  } catch (e) {
+    setErr('تعذّر الاتصال بالسيرفر. تأكد من تشغيل server.py');
+    resultCard.classList.add('hidden');
+  }
+
+  btn.disabled = false;
+  txt.textContent = 'تحليل';
+}
+
+// ══ RENDER RESULT ════════════════════════════════════════
+function renderResult(v) {
+  const [pIcon] = detectPlatform(S.currentUrl) || ['🌐'];
+  const thumb = v.thumbnail
+    ? `<img src="${v.thumbnail}" onerror="this.outerHTML='<div class=thumb-ph>${pIcon}</div>'" alt="">`
+    : `<div class="thumb-ph">${pIcon}</div>`;
+
+  // pick default format (first video format or first overall)
+  S.selectedFmtId = v.formats[0]?.id || 'bestvideo+bestaudio/best';
+
+  const fmtCards = v.formats.map((f, i) => {
+    const qClass = f.height >= 1440 ? 'u' : f.height >= 1080 ? 'h' : 'm';
+    return `
+    <div class="fmt ${i===0?'sel':''}" id="fmt_${i}" onclick="selectFmt(this,'${escQ(f.id)}')">
+      ${f.badge ? `<div class="fbadge">${f.badge}</div>` : ''}
+      <div class="fq ${f.type==='video'?qClass:'m'}">${f.quality}</div>
+      <div class="fd">
+        ${f.type==='video'?'🎬':'🎵'} ${f.codec}
+        ${f.fps ? `<br>⚡ ${f.fps}fps` : ''}
+        ${S.mergeAV && f.type==='video' ? '<br>🔊 مدمج' : ''}
+      </div>
+      <div class="fs">${f.size}</div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('resultInner').innerHTML = `
+    <div class="vinfo">
+      <div class="thumb-wrap">${thumb}<div class="dur">${v.duration}</div></div>
+      <div class="vmeta">
+        <div class="vtitle">${esc(v.title)}</div>
+        <div class="vtags">
+          <span class="tag tg-p">${pIcon} ${v.platform}</span>
+          <span class="tag tg-v">👁 ${v.view_count}</span>
+          ${S.mergeAV ? '<span class="tag tg-av">🔊 AV Merge</span>' : ''}
+        </div>
+        <div class="vup">القناة: ${esc(v.uploader)}</div>
+      </div>
+    </div>
+
+    <div class="sec-title">📦 الصيغ المتاحة</div>
+    <div class="fmts">${fmtCards}</div>
+
+    <button class="btn-green" id="dlBtn" onclick="startDownload()">
+      <span>⬇</span>
+      <span id="dlBtnTxt">إضافة للتحميل</span>
+    </button>`;
+}
+
+function selectFmt(el, fmtId) {
+  document.querySelectorAll('.fmt').forEach(c => c.classList.remove('sel'));
+  el.classList.add('sel');
+  S.selectedFmtId = fmtId;
+}
+
+// ══ TOGGLES ══════════════════════════════════════════════
+function toggleMerge() {
+  S.mergeAV = !S.mergeAV;
+  document.getElementById('togMerge').className = 'tog' + (S.mergeAV ? ' on' : '');
+}
+function togglePlaylist() {
+  S.playlist = !S.playlist;
+  document.getElementById('togPlaylist').className = 'tog' + (S.playlist ? ' on' : '');
+}
+
+// ══ START DOWNLOAD ═══════════════════════════════════════
+async function startDownload() {
+  const url   = S.currentUrl;
+  const fmtId = S.selectedFmtId || document.getElementById('selQuality').value;
+  if (!url) return;
+
+  const btn = document.getElementById('dlBtn');
+  if (btn) btn.disabled = true;
+
+  try {
+    const res = await fetch(`${API}/api/download`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ url, format_id: fmtId, merge_av: S.mergeAV }),
+    });
+    const data = await res.json();
+
+    if (!res.ok) { setErr(data.error || 'فشل في بدء التحميل'); if(btn)btn.disabled=false; return; }
+
+    const jobId = data.job_id;
+    S.downloads[jobId] = {
+      id: jobId, title: 'جارٍ التحميل…', platform: detectPlatform(url)?.[1] || '—',
+      icon: detectPlatform(url)?.[0] || '🌐', quality: fmtId,
+      status: 'waiting', progress: 0, speed: '—', eta: '—',
+      mergeAV: S.mergeAV, error: null,
+    };
+
+    renderQueue();
+    pollJob(jobId);
+  } catch (e) {
+    setErr('تعذّر الاتصال بالسيرفر');
+  }
+  if(btn)btn.disabled=false;
+}
+
+// ══ POLLING ══════════════════════════════════════════════
+function pollJob(jobId) {
+  if (S.pollTimers[jobId]) clearInterval(S.pollTimers[jobId]);
+  S.pollTimers[jobId] = setInterval(async () => {
+    try {
+      const res  = await fetch(`${API}/api/status/${jobId}`);
+      const data = await res.json();
+      if (!res.ok) return;
+
+      const job = S.downloads[jobId];
+      if (!job) { clearInterval(S.pollTimers[jobId]); return; }
+
+      Object.assign(job, {
+        status:   data.status,
+        progress: data.progress || 0,
+        speed:    data.speed || '—',
+        eta:      data.eta   || '—',
+        title:    data.title || job.title,
+        error:    data.error || null,
+      });
+
+      renderQueue();
+      updateStats();
+
+      if (data.status === 'done' || data.status === 'error') {
+        clearInterval(S.pollTimers[jobId]);
+      }
+    } catch {}
+  }, 800);
+}
+
+// ══ QUEUE RENDER ═════════════════════════════════════════
+function renderQueue() {
+  const ids = Object.keys(S.downloads);
+  const card  = document.getElementById('queueCard');
+  const sbar  = document.getElementById('statsBar');
+  const list  = document.getElementById('qList');
+  const count = document.getElementById('qCount');
+
+  if (ids.length === 0) {
+    card.classList.add('hidden');
+    sbar.classList.add('hidden');
+    list.innerHTML = '<div class="empty"><div class="empty-ico">📂</div>لا توجد تحميلات</div>';
+    return;
+  }
+  card.classList.remove('hidden');
+  sbar.classList.remove('hidden');
+  count.textContent = ids.length + ' ملف';
+
+  const stLabel = { waiting:'في الانتظار', downloading:'جارٍ التحميل', merging:'دمج الصوت', done:'مكتمل ✓', error:'خطأ' };
+  const stClass = { waiting:'st-wait', downloading:'st-dl', merging:'st-mrg', done:'st-done', error:'st-err' };
+  const progCls = { downloading:'', merging:'mrg', done:'done', waiting:'' };
+
+  list.innerHTML = ids.map(jid => {
+    const j = S.downloads[jid];
+    const pc = j.progress.toFixed(1);
+    const pCl = progCls[j.status] || '';
+    const phase = j.status === 'merging'
+      ? '⚙ يجري دمج الصوت مع الصورة عبر FFmpeg…'
+      : j.status === 'done'
+        ? '✓ اكتمل التحميل بنجاح — جاهز للحفظ'
+        : j.status === 'error'
+          ? `✕ خطأ: ${esc(j.error || 'غير معروف')}`
+          : j.status === 'waiting'
+            ? '⏳ في قائمة الانتظار…'
+            : `${pc}%`;
+
+    const dlBtn = j.status === 'done'
+      ? `<button class="btn-sm green" onclick="downloadFile('${jid}')">📥 حفظ الملف</button>` : '';
+    const rmBtn = `<button class="btn-sm red" onclick="removeJob('${jid}')">✕ إزالة</button>`;
+    const rtBtn = j.status === 'error'
+      ? `<button class="btn-sm def" onclick="retryJob('${jid}')">🔄 إعادة</button>` : '';
+
+    return `
+    <div class="dl-item" id="item_${jid}">
+      <div class="dl-head">
+        <div class="dl-ico">${j.icon}</div>
+        <div class="dl-info">
+          <div class="dl-name">${esc(j.title)}</div>
+          <div class="dl-meta">
+            <span>${j.platform}</span>
+            ${j.mergeAV ? '<span>🔊 AV Merged</span>' : ''}
+            ${j.speed !== '—' && j.status === 'downloading' ? `<span>${j.speed}</span>` : ''}
+            ${j.eta !== '—' && j.status === 'downloading' ? `<span>⏱ ${j.eta}</span>` : ''}
+          </div>
+        </div>
+        <span class="dl-st ${stClass[j.status] || 'st-wait'}">${stLabel[j.status] || j.status}</span>
+      </div>
+      ${j.status !== 'waiting' ? `
+        <div class="prog-wrap"><div class="prog ${pCl}" style="width:${j.progress}%"></div></div>
+        <div class="prog-row"><span>${phase}</span><span>${j.status==='downloading'?pc+'%':''}</span></div>
+      ` : `<div class="prog-row" style="margin-bottom:10px"><span>⏳ في قائمة الانتظار…</span></div>`}
+      <div class="dl-acts">${dlBtn}${rtBtn}${rmBtn}</div>
+    </div>`;
+  }).join('');
+}
+
+// ══ FILE ACTIONS ═════════════════════════════════════════
+async function downloadFile(jobId) {
+  window.open(`${API}/api/file/${jobId}`, '_blank');
+}
+
+async function removeJob(jobId) {
+  clearInterval(S.pollTimers[jobId]);
+  delete S.downloads[jobId];
+  try { await fetch(`${API}/api/delete/${jobId}`, { method: 'DELETE' }); } catch {}
+  renderQueue();
+  updateStats();
+}
+
+async function retryJob(jobId) {
+  const job = S.downloads[jobId];
+  if (!job) return;
+  job.status = 'waiting'; job.progress = 0; job.error = null;
+  renderQueue();
+  try {
+    const res = await fetch(`${API}/api/download`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ url: S.currentUrl, format_id: job.quality, merge_av: job.mergeAV }),
+    });
+    const data = await res.json();
+    if (res.ok) {
+      delete S.downloads[jobId];
+      S.downloads[data.job_id] = { ...job, id: data.job_id, status: 'waiting' };
+      pollJob(data.job_id);
+    }
+  } catch {}
+}
+
+function clearDone() {
+  Object.keys(S.downloads).filter(id => S.downloads[id].status === 'done')
+    .forEach(id => { clearInterval(S.pollTimers[id]); delete S.downloads[id]; });
+  renderQueue(); updateStats();
+}
+
+function clearAll() {
+  Object.keys(S.downloads).forEach(id => {
+    clearInterval(S.pollTimers[id]);
+    fetch(`${API}/api/delete/${id}`, { method: 'DELETE' }).catch(() => {});
+  });
+  S.downloads = {};
+  renderQueue(); updateStats();
+}
+
+// ══ STATS ════════════════════════════════════════════════
+function updateStats() {
+  const all = Object.values(S.downloads);
+  document.getElementById('sTotal').textContent  = all.length;
+  document.getElementById('sDone').textContent   = all.filter(j => j.status === 'done').length;
+  document.getElementById('sActive').textContent = all.filter(j => j.status === 'downloading').length;
+  const speeds = all.filter(j => j.status === 'downloading' && j.speed && j.speed !== '—')
+                    .map(j => parseFloat(j.speed));
+  document.getElementById('sSpeed').textContent  = speeds.length ? speeds.reduce((a,b)=>a+b,0).toFixed(1)+' MB/s' : '—';
+}
+
+// ══ UTILS ════════════════════════════════════════════════
+function setErr(msg) {
+  const el = document.getElementById('errBanner');
+  if (msg) { el.textContent = '⚠ ' + msg; el.style.display = 'flex'; }
+  else el.style.display = 'none';
+}
+
+function shakeInput() {
+  const el = document.getElementById('urlInput');
+  el.style.borderColor = 'var(--red)';
+  el.style.boxShadow   = '0 0 0 3px var(--red-d)';
+  setTimeout(() => { el.style.borderColor = ''; el.style.boxShadow = ''; }, 1600);
+}
+
+function esc(s) {
+  if (!s) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function escQ(s) { return (s||'').replace(/'/g, "\\'"); }
+</script>
+</body>
+</html>
